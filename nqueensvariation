@@ -1,0 +1,117 @@
+import java.util.*;
+
+public class NQueensColWiseFixed {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int n = sc.nextInt();           // Board size
+        int fixedRow = sc.nextInt();    // Fixed queen row
+        int fixedCol = sc.nextInt();    // Fixed queen column
+
+        List<char[][]> solutions = new ArrayList<>();
+        char[][] board = new char[n][n];
+        for (char[] row : board)
+            Arrays.fill(row, '.');
+
+        board[fixedRow][fixedCol] = 'Q';
+
+        solve(0, n, board, fixedRow, fixedCol, solutions);
+
+        if (solutions.isEmpty()) {
+            System.out.println("No solutions possible.");
+        } else {
+            for (char[][] sol : solutions) {
+                for (char[] row : sol)
+                    System.out.println(new String(row));
+                System.out.println();
+            }
+        }
+    }
+
+    static void solve(int col, int n, char[][] board, int fixedRow, int fixedCol, List<char[][]> solutions) {
+        if (col == n) {
+            char[][] copy = new char[n][n];
+            for (int i = 0; i < n; i++)
+                copy[i] = board[i].clone();
+            solutions.add(copy);
+            return;
+        }
+
+        if (col == fixedCol) {
+            solve(col + 1, n, board, fixedRow, fixedCol, solutions);
+            return;
+        }
+
+        for (int row = 0; row < n; row++) {
+            if (isSafe(row, col, board, n)) {
+                board[row][col] = 'Q';
+                solve(col + 1, n, board, fixedRow, fixedCol, solutions);
+                board[row][col] = '.';
+            }
+        }
+    }
+
+    static boolean isSafe(int row, int col, char[][] board, int n) {
+        int dupRow = row, dupCol = col;
+
+        // upper-left ↖
+        while (row >= 0 && col >= 0) {
+            if (board[row][col] == 'Q') return false;
+            row--; col--;
+        }
+
+        row = dupRow;
+        col = dupCol;
+
+        // same row ⬅
+        while (col >= 0) {
+            if (board[row][col] == 'Q') return false;
+            col--;
+        }
+
+        row = dupRow;
+        col = dupCol;
+
+        // lower-left ↙
+        while (row < n && col >= 0) {
+            if (board[row][col] == 'Q') return false;
+            row++; col--;
+        }
+
+        row = dupRow;
+        col = dupCol;
+
+        // upper-right ↗
+        while (row >= 0 && col < n) {
+            if (board[row][col] == 'Q') return false;
+            row--; col++;
+        }
+
+        row = dupRow;
+        col = dupCol;
+
+        // lower-right ↘
+        while (row < n && col < n) {
+            if (board[row][col] == 'Q') return false;
+            row++; col++;
+        }
+
+        // same column ↑ ↓
+        row = 0;
+        col = dupCol;
+        while (row < n) {
+            if (board[row][col] == 'Q' && row != dupRow) return false;
+            row++;
+        }
+
+        // 🔥 same row ← →
+        row = dupRow;
+        col = 0;
+        while (col < n) {
+            if (board[row][col] == 'Q' && col != dupCol) return false;
+            col++;
+        }
+
+        return true;
+    }
+
+}
