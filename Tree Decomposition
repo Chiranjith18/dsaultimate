@@ -1,0 +1,117 @@
+import java.util.*;
+
+public class TreeMaxDisconnectedComponents {
+    static List<List<Integer>> tree = new ArrayList<>();
+    static int[] parent;
+    static boolean[] visited;
+    static int N;
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        N = sc.nextInt();  // Number of nodes in the tree
+
+        parent = new int[N + 1];         // To store parent of each node
+        visited = new boolean[N + 1];    // For DFS marking
+
+        // Initialize adjacency list for the tree
+        for (int i = 0; i <= N; i++) {
+            tree.add(new ArrayList<>());
+        }
+
+        // Read edges and build the tree
+        for (int i = 0; i < N - 1; i++) {
+            int u = sc.nextInt();
+            int v = sc.nextInt();
+            tree.get(u).add(v);
+            tree.get(v).add(u);
+        }
+
+        // Set parent for all nodes using DFS starting from root (1)
+        setParent(1, -1);
+
+        int maxComponents = 1;
+
+        // Try every pair of nodes (u, v)
+        for (int u = 1; u <= N; u++) {
+            for (int v = u + 1; v <= N; v++) {
+                List<Integer> path = getPath(u, v);
+
+                // Only consider path if it goes through the root (node 1)
+                if (!path.contains(1)) continue;
+
+                // Mark all nodes in the path as removed
+                Arrays.fill(visited, false);
+                for (int node : path) {
+                    visited[node] = true;
+                }
+
+                // Count how many connected components remain
+                int count = 0;
+                for (int i = 1; i <= N; i++) {
+                    if (!visited[i]) {
+                        dfs(i);
+                        count++;
+                    }
+                }
+
+                // Keep the maximum count found
+                maxComponents = Math.max(maxComponents, count);
+            }
+        }
+
+        // Output the final answer
+        System.out.println(maxComponents);
+    }
+
+    // DFS to visit all nodes in a component
+    static void dfs(int node) {
+        visited[node] = true;
+        for (int neighbor : tree.get(node)) {
+            if (!visited[neighbor]) {
+                dfs(neighbor);
+            }
+        }
+    }
+
+    // DFS to set parent of each node
+    static void setParent(int node, int par) {
+        parent[node] = par;
+        for (int neighbor : tree.get(node)) {
+            if (neighbor != par) {
+                setParent(neighbor, node);
+            }
+        }
+    }
+
+    // Get shortest path from u to v using parent[] arrays
+    static List<Integer> getPath(int u, int v) {
+        List<Integer> pathU = new ArrayList<>();
+        List<Integer> pathV = new ArrayList<>();
+        Set<Integer> visitedSet = new HashSet<>();
+
+        // Build path from u to root
+        while (u != -1) {
+            pathU.add(u);
+            visitedSet.add(u);
+            u = parent[u];
+        }
+
+        // Build path from v to first common ancestor
+        while (v != -1 && !visitedSet.contains(v)) {
+            pathV.add(v);
+            v = parent[v];
+        }
+
+        // Combine both paths to form full u–v path
+        List<Integer> path = new ArrayList<>();
+        for (int i = 0; i < pathU.size(); i++) {
+            path.add(pathU.get(i));
+            if (pathU.get(i) == v) break; //makes path from u to lca
+        }
+
+        Collections.reverse(pathV); //makes path from lca to v
+        path.addAll(pathV);
+
+        return path;
+    }
+}
