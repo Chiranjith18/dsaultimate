@@ -1,0 +1,99 @@
+import java.util.*;
+
+public class Main {
+    // Target solved board state
+    static int[][] goal = {{1,2,3},{4,5,0}};
+    // Directions (down, up, right, left)
+    static int[][] dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+    
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int[][] board = new int[2][3];
+        // Read the initial board configuration
+        for(int i=0;i<2;i++)
+            for(int j=0;j<3;j++)
+                board[i][j] = sc.nextInt();
+        // Solve and print result
+        System.out.println(slidingPuzzle(board));
+    }
+
+    // BFS to find minimum moves to reach the goal
+    static int slidingPuzzle(int[][] start) {
+        // If already solved
+        if(equal(start,goal)) return 0;
+
+        Queue<int[][]> q = new LinkedList<>(); // BFS queue
+        List<int[][]> visited = new ArrayList<>(); // To track visited board states
+
+        q.offer(copy(start));      // Add starting board (copy to avoid mutation issues)
+        visited.add(copy(start));  // Mark as visited
+
+        int step = 0; // Number of moves so far
+        while(!q.isEmpty()){
+            int size = q.size(); // Current BFS layer size
+            for(int s=0;s<size;s++){
+                int[][] cur = q.poll(); // Current board state
+                // If solved, return steps
+                if(equal(cur,goal)) return step;
+
+                // Find position of zero (empty tile)
+                int[] pos = findZero(cur);
+                int x = pos[0], y = pos[1];
+
+                // Try all 4 possible moves (swap zero with neighbor)
+                for(int[] d: dirs){
+                    int nx = x+d[0], ny = y+d[1];
+                    if(nx>=0 && nx<2 && ny>=0 && ny<3){
+                        int[][] next = copy(cur); // Copy current state
+                        swap(next,x,y,nx,ny);     // Swap zero with neighbor
+                        // If not visited yet, add to queue
+                        if(!contains(visited,next)){
+                            visited.add(copy(next));
+                            q.offer(next);
+                        }
+                    }
+                }
+            }
+            step++; // Increase moves after finishing one BFS layer
+        }
+        return -1; // Impossible to solve
+    }
+
+    // Check if two boards are identical
+    static boolean equal(int[][] a,int[][] b){
+        for(int i=0;i<2;i++)
+            for(int j=0;j<3;j++)
+                if(a[i][j]!=b[i][j]) return false;
+        return true;
+    }
+
+    // Check if a target board is already in visited list
+    static boolean contains(List<int[][]> list,int[][] target){
+        for(int[][] b : list)
+            if(equal(b,target)) return true;
+        return false;
+    }
+
+    // Deep copy of a board
+    static int[][] copy(int[][] src){
+        int[][] res = new int[2][3];
+        for(int i=0;i<2;i++)
+            res[i] = Arrays.copyOf(src[i],3);
+        return res;
+    }
+
+    // Swap two positions in the board
+    static void swap(int[][] b,int x1,int y1,int x2,int y2){
+        int tmp = b[x1][y1];
+        b[x1][y1] = b[x2][y2];
+        b[x2][y2] = tmp;
+    }
+
+    // Find the coordinates of the empty tile (0)
+    static int[] findZero(int[][] b){
+        for(int i=0;i<2;i++)
+            for(int j=0;j<3;j++)
+                if(b[i][j]==0) return new int[]{i,j};
+        return null;
+    }
+}
