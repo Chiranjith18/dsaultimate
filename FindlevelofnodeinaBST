@@ -1,0 +1,63 @@
+import java.util.*;
+
+class Main {
+    // Node class to represent each node of BST
+    static class Node {
+        int val;
+        Node left, right;
+        Node(int val) {
+            this.val = val;
+            this.left = this.right = null;
+        }
+    }
+
+    // Function to insert a value into the BST
+    static Node insert(Node root, int val) {
+        if (root == null) {
+            return new Node(val); // create new node if root is null
+        }
+        if (val < root.val) {
+            root.left = insert(root.left, val); // go left if value is smaller
+        } else {
+            root.right = insert(root.right, val); // go right if value is larger
+        }
+        return root;
+    }
+
+    // Function to find the level of a node with value x
+    static int findLevel(Node root, int x, int level) {
+        if (root == null) {
+            return -1; // not found
+        }
+        if (root.val == x) {
+            return level; // found the node, return its level
+        }
+        if (x < root.val) {
+            return findLevel(root.left, x, level + 1); // search left subtree
+        } else {
+            return findLevel(root.right, x, level + 1); // search right subtree
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        // Read number of nodes
+        int n = Integer.parseInt(sc.nextLine());
+
+        // Read the node values
+        String[] vals = sc.nextLine().split(" ");
+
+        // Read the target node value whose level we need to find
+        int x = Integer.parseInt(sc.nextLine());
+
+        // Build BST
+        Node root = null;
+        for (int i = 0; i < n; i++) {
+            root = insert(root, Integer.parseInt(vals[i]));
+        }
+
+        // Find and print the level of the target node
+        System.out.println(findLevel(root, x, 0));
+    }
+}
