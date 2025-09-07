@@ -1,0 +1,101 @@
+import java.util.*;
+
+class Solution {
+
+    // Main function: Find the maximum fruits that can be collected
+    public int maxTotalFruits(List<List<Integer>> fruits, int startPos, int k) {
+        int n = fruits.size();
+
+        // --------------------------------------------------------
+        // Step 1: Divide fruits into "left" and "right" buckets
+        // - Left: fruits at positions <= startPos (store distance from startPos)
+        // - Right: fruits at positions > startPos (store distance from startPos)
+        // Each entry = [distance, fruitCount]
+        // --------------------------------------------------------
+        List<int[]> left = new ArrayList<>();
+        int i = 0;
+
+        // Gather fruits to the LEFT of startPos
+        while (i < n && fruits.get(i).get(0) <= startPos) {
+            int dist = startPos - fruits.get(i).get(0); // distance leftward
+            int count = fruits.get(i).get(1);           // number of fruits
+            left.add(new int[]{dist, count});
+            i++;
+        }
+        Collections.reverse(left); // Reverse so nearest fruits come first
+
+        // Gather fruits to the RIGHT of startPos
+        List<int[]> right = new ArrayList<>();
+        while (i < n) {
+            int dist = fruits.get(i).get(0) - startPos; // distance rightward
+            int count = fruits.get(i).get(1);
+            right.add(new int[]{dist, count});
+            i++;
+        }
+
+        // --------------------------------------------------------
+        // Step 2: Build prefix sums
+        // psumL[j] = total fruits collected if we take first j positions on LEFT
+        // psumR[j] = total fruits collected if we take first j positions on RIGHT
+        // --------------------------------------------------------
+        int[] psumL = new int[left.size() + 1];
+        int[] psumR = new int[right.size() + 1];
+
+        for (int j = 0; j < left.size(); j++) {
+            psumL[j + 1] = psumL[j] + left.get(j)[1];
+        }
+        for (int j = 0; j < right.size(); j++) {
+            psumR[j + 1] = psumR[j] + right.get(j)[1];
+        }
+
+        // --------------------------------------------------------
+        // Step 3: Try every possible allocation of steps (0..k)
+        // Two strategies:
+        //   1. Go LEFT first, then RIGHT
+        //   2. Go RIGHT first, then LEFT
+        //
+        // If you go distance "d" in one direction, it costs 2*d steps 
+        // (go + return), leaving (k - 2*d) steps for the other side.
+        // --------------------------------------------------------
+        int maxCollected = 0;
+
+        for (int steps = 0; steps <= k; steps++) {
+            int go = steps;
+
+            // Case 1: Go LEFT first
+            int leftReach  = upperBound(left, go);          // positions reachable on left
+            int rightReach = upperBound(right, k - 2 * go); // remaining steps for right
+            maxCollected = Math.max(maxCollected,
+                                    psumL[leftReach] + psumR[rightReach]);
+
+            // Case 2: Go RIGHT first
+            rightReach = upperBound(right, go);
+            leftReach  = upperBound(left, k - 2 * go);
+            maxCollected = Math.max(maxCollected,
+                                    psumL[leftReach] + psumR[rightReach]);
+        }
+
+        return maxCollected;
+    }
+
+    // --------------------------------------------------------
+    // Helper function: upperBound
+    // Finds how many fruit positions are reachable within 'steps'
+    //
+    // Each element in list = [distance, fruitCount]
+    // We need the count of positions with distance <= steps.
+    // Works exactly like C++ std::upper_bound.
+    // --------------------------------------------------------
+    private int upperBound(List<int[]> arr, int steps) {
+        int low = 0, high = arr.size();
+        while (low < high) {
+            int mid = (low + high) / 2;
+            if (arr.get(mid)[0] <= steps) {
+                low = mid + 1;   // this position is reachable → move right
+            } else {
+                high = mid;      // too far → shrink range
+            }
+        }
+        return low; // number of reachable positions
+    }
+}
