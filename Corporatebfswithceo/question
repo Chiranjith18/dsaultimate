@@ -1,0 +1,58 @@
+Problem Statement:
+
+You’ve been hired to build a corporate directory system for a tech company. The company’s organizational structure is represented as a tree of employees, where:
+
+Each employee has a name.
+Each employee may have zero or more direct reports (children).
+This hierarchy is acyclic and connected, with the CEO at the top.
+
+Your task is to analyze the organizational chart using the Breadth-First Search (BFS) approach, starting from the CEO and going level by level from left to right.
+
+
+
+Your Objective
+
+Implement a function called breadthFirstSearch, which takes an empty list and traverses the organizational chart (tree) in BFS order, storing each employee's name in the list, and returns it.
+This allows the HR system to print the top-down hierarchy of the company in a meaningful and readable order.
+
+
+Input format :
+Line 1: An integer n — total number of employees (nodes)
+
+Next n lines: Each line describes an employee in the format:
+
+Output format :
+Print a single line of employee names in Breadth-First Search order, from the CEO down the hierarchy, level by level, left to right.
+
+
+
+Refer to the sample output for formatting specifications.
+
+Code constraints :
+1 ≤ n ≤ 1000
+
+Employee names are unique, case-sensitive uppercase strings (e.g., A, Node1, etc.)
+
+The structure is a valid acyclic tree
+
+The first line is always the CEO
+
+Sample test cases :
+Input 1 :
+3
+A 2 B C
+B 0
+C 0
+Output 1 :
+A B C
+Input 2 :
+7
+A 2 B C
+B 2 D E
+C 2 F G
+D 0
+E 0
+F 0
+G 0
+Output 2 :
+A B C D E F G
