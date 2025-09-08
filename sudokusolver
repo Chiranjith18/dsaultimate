@@ -1,0 +1,74 @@
+import java.util.*;
+
+public class Main {
+
+    // Function to check if placing 'num' at board[row][col] is valid
+    static boolean isValid(int[][] board, int row, int col, int num) {
+        // 1. Check if 'num' is already in the same row or column
+        for (int i = 0; i < 9; i++) {
+            if (board[row][i] == num || board[i][col] == num)
+                return false; // number already exists, cannot place
+        }
+
+        // 2. Check the 3x3 subgrid
+        int startRow = 3 * (row / 3); // find starting row of 3x3 box
+        int startCol = 3 * (col / 3); // find starting column of 3x3 box
+        for (int i = startRow; i < startRow + 3; i++) {
+            for (int j = startCol; j < startCol + 3; j++) {
+                if (board[i][j] == num)
+                    return false; // number already exists in the subgrid
+            }
+        }
+
+        // If we reach here, placement is valid
+        return true;
+    }
+
+    // Recursive function to solve the Sudoku using backtracking
+    static boolean solve(int[][] board) {
+        for (int r = 0; r < 9; r++) { // go row by row
+            for (int c = 0; c < 9; c++) { // go column by column
+                if (board[r][c] == 0) { // empty cell found
+                    for (int num = 1; num <= 9; num++) { // try numbers 1 to 9
+                        if (isValid(board, r, c, num)) { // check if number can be placed
+                            board[r][c] = num; // place the number
+                            if (solve(board)) // recurse to solve the rest
+                                return true; // if solved, return true
+                            board[r][c] = 0; // backtrack if dead-end reached
+                        }
+                    }
+                    return false; // no number fits here, trigger backtracking
+                }
+            }
+        }
+        return true; // all cells filled correctly, Sudoku solved
+    }
+
+    // Function to print the Sudoku board
+    static void printBoard(int[][] board) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                System.out.print(board[i][j] + " "); // print each number in row
+            }
+            System.out.println(); // move to next row
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int[][] board = new int[9][9];
+
+        // Input the 9x9 Sudoku board
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                board[i][j] = sc.nextInt(); // 0 represents empty cells
+            }
+        }
+
+        // Solve the Sudoku and print result
+        if (solve(board))
+            printBoard(board); // Sudoku solved
+        else
+            System.out.println("No solution exists."); // impossible board
+    }
+}
