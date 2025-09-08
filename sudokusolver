@@ -72,3 +72,5 @@ public class Main {
             System.out.println("No solution exists."); // impossible board
     }
 }
+
+https://chatgpt.com/share/68be7949-7ee0-8004-a122-34d45cf6907d
