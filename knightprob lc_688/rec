@@ -1,0 +1,35 @@
+class Solution {
+    // 8 possible knight moves
+    private static final int[][] moves = {
+        {2, 1}, {2, -1}, {-2, 1}, {-2, -1},
+        {1, 2}, {1, -2}, {-1, 2}, {-1, -2}
+    };
+
+    public double knightProbability(int n, int k, int row, int column) {
+        // Start recursive calculation
+        return dfs(n, k, row, column);
+    }
+
+    private double dfs(int n, int k, int row, int col) {
+        // Case 1: Knight goes outside board → invalid path
+        if (row < 0 || row >= n || col < 0 || col >= n) {
+            return 0.0;
+        }
+
+        // Case 2: No moves left, and knight is still inside → valid path
+        if (k == 0) {
+            return 1.0;
+        }
+
+        // Otherwise, try all 8 moves
+        double prob = 0.0;
+        for (int[] move : moves) {
+            int newRow = row + move[0];
+            int newCol = col + move[1];
+            // Each move has equal probability 1/8
+            prob += dfs(n, k - 1, newRow, newCol) / 8.0;
+        }
+
+        return prob;
+    }
+}
