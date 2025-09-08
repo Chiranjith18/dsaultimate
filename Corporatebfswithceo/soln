@@ -1,0 +1,89 @@
+import java.util.*;
+
+// Class representing an Employee in the company hierarchy
+class Employee {
+    String name;                  // Employee's name
+    List<Employee> reports;       // List of employees who directly report to this employee
+
+    // Constructor initializes employee with name and empty list of reports
+    public Employee(String name) {
+        this.name = name;
+        reports = new ArrayList<>();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+
+        // Number of employees (or manager-report relations input lines)
+        int n = s.nextInt();
+
+        // Map to quickly lookup Employee object by their name
+        HashMap<String, Employee> m = new HashMap<>();
+
+        // Will store the name of the CEO (root of hierarchy)
+        String ceo = null;
+
+        // Read input for all employees
+        for (int i = 0; i < n; i++) {
+            String name = s.next(); // Read employee/manager name
+
+            // The very first employee in input is considered CEO
+            if (i == 0) {
+                ceo = name;
+            }
+
+            // Either fetch existing Employee object or create new one
+            Employee emp = m.getOrDefault(name, new Employee(name));
+
+            // Number of direct reports (children in hierarchy)
+            int k = s.nextInt();
+
+            // For each direct report
+            for (int j = 0; j < k; j++) {
+                String child = s.next(); // Child employee name
+
+                // Either fetch existing employee or create new
+                Employee c = m.getOrDefault(child, new Employee(child));
+
+                // Add child to current employee's report list
+                emp.reports.add(c);
+
+                // Put/Update child in map
+                m.put(child, c);
+            }
+
+            // Put/Update manager in map
+            m.put(name, emp);
+        }
+
+        // Result list to store BFS traversal order
+        ArrayList<String> res = new ArrayList<>();
+
+        // Perform BFS starting from CEO
+        bfs(m.get(ceo), res);
+
+        // Print employees in BFS order
+        System.out.println(String.join(" ", res));
+    }
+
+    // Breadth-First Search traversal of hierarchy
+    public static void bfs(Employee root, ArrayList<String> res) {
+        Queue<Employee> q = new LinkedList<>();
+        q.add(root); // Start with root (CEO)
+
+        while (!q.isEmpty()) {
+            // Remove first employee from queue
+            Employee curr = q.poll();
+
+            // Add employee's name to result
+            res.add(curr.name);
+
+            // Add all direct reports of current employee to queue
+            for (Employee report : curr.reports) {
+                q.add(report);
+            }
+        }
+    }
+}
