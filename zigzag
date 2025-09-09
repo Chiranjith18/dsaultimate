@@ -1,0 +1,58 @@
+// Class to demonstrate ZigZag (diagonal) traversal of a matrix
+public class ZigZagMatrix {
+
+    // Function to print the matrix in ZigZag (diagonal) order
+    public static void printZigZag(int[][] matrix) {
+        int n = matrix.length;        // Number of rows in the matrix
+        int m = matrix[0].length;     // Number of columns in the matrix
+
+        // There are (n + m - 1) diagonals in a n x m matrix
+        for (int d = 0; d < n + m - 1; d++) {
+
+            // If diagonal index is even, traverse upwards (↗)
+            if (d % 2 == 0) {
+                // Start from bottom-most row of this diagonal or last row if out of bounds
+                int row = Math.min(d, n - 1);
+                // Column is determined by the diagonal index minus current row
+                int col = d - row;
+
+                // Traverse the diagonal upwards
+                while (row >= 0 && col < m) {
+                    System.out.print(matrix[row][col] + " ");
+                    row--;  // Move up
+                    col++;  // Move right
+                }
+            }
+
+            // If diagonal index is odd, traverse downwards (↙)
+            else {
+                // Start from right-most column of this diagonal or last column if out of bounds
+                int col = Math.min(d, m - 1);
+                // Row is determined by diagonal index minus current column
+                int row = d - col;
+
+                // Traverse the diagonal downwards
+                while (col >= 0 && row < n) {
+                    System.out.print(matrix[row][col] + " ");
+                    row++;  // Move down
+                    col--;  // Move left
+                }
+            }
+        }
+    }
+
+    // Main function to test the ZigZag traversal
+    public static void main(String[] args) {
+        int[][] matrix = {
+            {1, 2, 3},
+            {4, 5, 6},
+            {7, 8, 9}
+        };
+        // Expected output: 1 2 4 7 5 3 6 8 9
+        printZigZag(matrix);
+    }
+}
+
+https://chatgpt.com/c/68c07497-c7c0-8326-9c2d-deadbb21ddf1
+leetcode 498
+https://youtu.be/7HAKiGZSrWc?feature=shared
