@@ -10,7 +10,7 @@ The calculator only has buttons for the digits 0-9 and the symbols +, -, %, =, a
 
 The arrangement of 7 segment display for each number from 0-9 and for the five mathematical operators is shown below.
 
-com.tcs.cv.automata.ei.middleware.DocxToHtmlConverter@547e29a4:image1.png com.tcs.cv.automata.ei.middleware.DocxToHtmlConverter@547e29a4:image2.png com.tcs.cv.automata.ei.middleware.DocxToHtmlConverter@547e29a4:image3.png
+codevita 4.1
 
 Given the equation that Gagan typed and the current display on the calculator, determine which character corresponds to the LED that should be toggled to make the equation correct.
 
